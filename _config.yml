@@ -31,6 +31,7 @@ markdown_ext: "markdown,mkdown,mkdn,mkd,md"
 theme: minima
 plugins:
   - jekyll-feed
+markdown: kramdown
 
 # Exclude from processing.
 # The following items will not be processed, by default.
