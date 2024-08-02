@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: FPGAs and SDRs for Optical Metrology Notes
+title: Shawn McSorley Research Notes
 email: shawn.mcsorley@research.uwa.edu.au
 description: >- # this means to ignore newlines until "baseurl:"
   Notes and blog posts on using FPGAs and SDRs for optical metrology.

@@ -3,16 +3,10 @@ layout: page
 title: About
 permalink: /about/
 ---
+# Overview
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](https://jekyllrb.com/)
+I'm a PhD student with the Astrophotonics group at the University of Western Australia. I'm working on the development of digita control systems for continuous wave optical time and frequency transfer. 
 
-You can find the source code for Minima at GitHub:
-[jekyll][jekyll-organization] /
-[minima](https://github.com/jekyll/minima)
-
-You can find the source code for Jekyll at GitHub:
-[jekyll][jekyll-organization] /
-[jekyll](https://github.com/jekyll/jekyll)
-
-
-[jekyll-organization]: https://github.com/jekyll
+# Publications
+- Shawn McSorley, David R. Gozzard, Skevos F. E. Karpathakis, Benjamin P. Dix-Matthews, and Sascha W. Schediwy, [Stabilized free space optical frequency transfer using digitally enhanced heterodyne interferometry,](https://doi.org/10.1364/OL.492356) Opt. Lett. **48**, 3637-3640 (2023)
+- McSorley, S. M., Dix-Matthews, B. P., Frost, A. M., McCann, A. S., Karpathakis, S. F., Gozzard, D. R., ... & Schediwy, S. W. (2024). [Free Space Optical Frequency Comparison Over Rapidly Moving Links.](https://arxiv.org/abs/2402.08899) _arXiv preprint arXiv:2402.08899_.
