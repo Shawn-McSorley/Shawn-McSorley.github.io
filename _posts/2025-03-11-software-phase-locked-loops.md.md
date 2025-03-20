@@ -344,6 +344,6 @@ With this understanding of IQ data, the Analytic signal and the Hilbert transfor
 
 [2] E. Rubiola and F. Vernotte, “The Companion of Enrico’s Chart for Phase Noise and Two-Sample Variances,” _IEEE Trans. Microwave Theory Techn._, vol. 71, no. 7, pp. 2996–3025, Jul. 2023, doi: [10.1109/TMTT.2023.3238267](https://doi.org/10.1109/TMTT.2023.3238267).
 
-[3] “hilbert — SciPy v1.15.2 Manual.” Accessed: Mar. 11, 2025. [Online]. Available: [https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html)
+[3] “hilbert — SciPy v1.15.2 Manual.”  [Online]. Available: [https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html)
 
-[4] Mathuranathan, “Understanding Analytic Signal and Hilbert Transform,” GaussianWaves. Accessed: Mar. 20, 2025. [Online]. Available: [https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/](https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/)
+[4] Mathuranathan, “Understanding Analytic Signal and Hilbert Transform,” GaussianWaves. [Online]. Available: [https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/](https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/)
