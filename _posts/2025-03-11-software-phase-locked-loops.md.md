@@ -73,11 +73,11 @@ The phasor model also tells us how noise will couple into our measurement. If we
 # A Brief Review of IQ Sampling
 I think it's most useful to mention IQ sampling here. Rather than sampling $V(t)$ directly, we can sample its I and Q components. Again, I highly recommend reading PySDR [1] for a more thorough description. For a signal $x(t)=A\cos(2\pi f t-\phi)$, we can, through some trigonometry, express it as,
 
-$$ x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t)$$
+$$ x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t),$$
 
-$$I=A\cos(\phi)$$
+$$I=A\cos(\phi),$$
 
-$$Q=A\sin(\phi)$$
+$$Q=A\sin(\phi).$$
 
 Most SDRs will sample I and Q, some sample $V(t)$ directly. Soon, I will talk about going back and forth between the two. In Physics and Engineering, we like to use complex exponentials. They're slightly easier to work with mathematically, and, arguably also easier to work with numerically. What's nice about IQ data, is that it naturally describes a phasor. The magnitude of the IQ phasor, $A$, is obtained from,
 
@@ -89,35 +89,36 @@ $$\phi=\tan^{-1}(Q/I).$$
 
 Thus, we can describe our IQ data as a phasor, $\pmb X$,
 
-$$\pmb{X}=I+jQ.$$
+$$\pmb{X}=I+jQ,$$
 
 $$A=|I+jQ|,$$
 
-$$\phi=\angle(I+jQ)$$
+$$\phi=\angle(I+jQ).$$
 
 What's nice about IQ data is that the rotating part of the phasor, herein called the carrier, is subtracted off for us in the analogue front end of the receiver. An important clarification is that the IQ phasor $\pmb X$ is used as it makes our life easy. We can readily analyse imaginary data in software. We can take its FFT to visualise what makes up our signal. We can frequency up-shift and down-shift simply by mixing the IQ data with a complex exponential. We can also readily extract phase and amplitude by taking the magnitude or argument of our IQ samples. It's important to remember that our data, $\pmb X=I+jQ$, represents the two independent quadratures of a physical signal, related back to $x(t)$ via,
 
 $$ x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t).$$
 
 
-## Analytical Signals
+## Analytic Signals
 
-With a good understanding of IQ sampling and the IQ phasor, we can introduce what's called an **analytic signal**. A good place to look for information is the SciPy reference [3] and [4]. To best understand this, let's look at a very important analytic signal, the complex exponential,
+With a good understanding of IQ sampling and the IQ phasor, we can introduce what's called an **analytic signal**. A good place to look for information is the SciPy reference [3] and [4]. To best understand this, let's look at a very useful analytic signal, the complex exponential,
 
 $$\hat{u}(t)=Ae^{j\phi(t)}=A\cos(\phi(t))+jA\sin{\phi(t)}.$$
 
 The key properties of an analytic signal are:
 - The imaginary component, $\sin(\phi)$ in this case, is the real component, $\cos(\phi)$ here, shifted by $90^\circ$ degrees.
-- The analytic signal, $e^{j\phi}$ here, has no negative frequency components. This can readily be verified by adding the fourier transforms of $\cos(\phi)$ and $j\sin(\phi)$
-- The imaginary component, $\sin(\phi)$, does not tell us anything new about our real signal $\cos(\theta)$
+- The analytic signal, $e^{j\phi}$ here, has no negative frequency components. This can readily be verified by adding the fourier transforms of $\cos(\phi)$ and $j\sin(\phi)$.
+- The imaginary component, $\sin(\phi)$, does not tell us anything new about our real signal $\cos(\theta)$.
+	- Our original, real signal, is $\mathcal{Re}\\{\hat u (t)\\}$. 
 
-The reason we like the analytic signal is that we can obtain the phase and amplitude quite easily with,
+The reason we would use the analytic signal is that we can obtain the phase and amplitude quite easily with,
 
-$$A=|\hat{u}(t)|$$
+$$A=|\hat{u}(t)|,$$
 
-$$\phi(t)=\angle \hat{u}(t)$$
+$$\phi(t)=\angle \hat{u}(t).$$
 
-The analytic signal is, for our purposes, a more technical term for phasor. The reason I introduce it, is because there's a useful tool called the Hilbert transform that can be used to generate the analytic signal from a real valued signal.
+The analytic signal is a generalisation of the phasor. A phasor typically has no time dependence. To include a time dependence in the phasor model, is to make it an analytic signal. The reason I introduce it, is because there's a useful tool called the Hilbert transform that can be used to generate the analytic signal from a real valued signal.
 
 We can construct an analytic signal with,
 
@@ -125,7 +126,7 @@ $$\hat{u}(t)=x(t)+j\mathcal{H}\{x(t)\},$$
 
 where $\mathcal{H}\\{ \dots \\}$ denotes the Hilbert transform. The Hilbert transform is, in and of itself, an integral transform. However, we can opt to relate it to the Fourier transform of $x(t)$. Essentially, the Hilbert transform phase shifts the signal $x(t)$. But, it actually applies a different phase shift to the positive and negative frequencies in the signal. The Fourier transform of $\mathcal{H}\\{x(t)\\}$, is,
 
-$$\DeclareMathOperator{\sign}{sign}\mathcal{F}\{\mathcal{H}\{x\}\}=-j\sign(f)\mathcal{F}(x) $$
+$$\DeclareMathOperator{\sign}{sign}\mathcal{F}\{\mathcal{H}\{x\}\}=-j\sign(f)\mathcal{F}(x). $$
 
 That is, the Hilbert transform rotates positive frequencies by $-90^\circ$ degrees, and negative frequencies by $+90^\circ$ degrees. Computationally, this is the easiest way to perform the Hilbert transform. You can take its FFT, and mix the positive frequency components by $-j$, and the negative frequency components by $+j$. Alternatively, you can take the FFT, zero out the negative frequencies, and double the positive frequencies. The inverse FFT would then provide the analytic signal directly.
 
@@ -133,9 +134,9 @@ The reason we would do this, is again convenience. It's easier to determine the 
 
 If we consider our original voltage model $V(t)=A\cos(2\pi f t + \alpha(t)+\bar{\epsilon}(t))+\bar{A}(t)$, we can readily construct its analytic signal (its phasor! shown in Figure 1) as,
 
-$$\mathcal{H}\{V(t)\}=A\sin(2\pi f t+\alpha(t)+\bar\epsilon(t))+\mathcal{H}\{\bar{A}(t)\}$$
+$$\mathcal{H}\{V(t)\}=A\sin(2\pi f t+\alpha(t)+\bar\epsilon(t))+\mathcal{H}\{\bar{A}(t)\},$$
 
-$$\hat{u}(t)=A\cos(2\pi f t + \alpha(t)+\bar{\epsilon}(t))+\bar{A}(t) + j[A\sin(2\pi f t+\alpha(t)+\bar\epsilon(t))+\mathcal{H}\{\bar{A}(t)\}]$$
+$$\hat{u}(t)=A\cos(2\pi f t + \alpha(t)+\bar{\epsilon}(t))+\bar{A}(t) + j[A\sin(2\pi f t+\alpha(t)+\bar\epsilon(t))+\mathcal{H}\{\bar{A}(t)\}].$$
 
 I like this approach, as it readily highlights that the additive noise will couple into both the imaginary and real component of our phasor model. That is, our phasor is corrupted by $\bar A(t)+j\mathcal{H}\\{\bar A(t) \\}$. This will help us model the impact of additive noise on our phase measurement. Before we do some fun math, a word of caution. It's very easy to fall into the trap of thinking that IQ data and the analytic signal tell us the same thing (I've fallen into it myself). However, **in general**, they are different. The key distinction stems from a fundamental property of the analytic signal -- the imaginary component does not tell us anything new about our signal, it's dependent on the real signal we care about via the Hilbert transform. For IQ data however, we are looking at two independent quadratures, we cannot discern one from the other. Regardless, the analytic signal and IQ data that we would measure can be related to each other.
 
@@ -186,9 +187,9 @@ We can generate a signal with arbitrary phase modulation , $\phi(t)$, by first g
 $$ \pmb X = e^{j\phi(t)}=I+jQ.$$
 We then have two equivalent options of converting this to a real signal:
 
-$$x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t)$$
+$$x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t),$$
 
-$$x(t)=\mathcal{Re}\{\pmb X^* e^{j2\pi f t}\}$$
+$$x(t)=\mathcal{Re}\{\pmb X^* e^{j2\pi f t}\}.$$
 
 <details>
   <summary>Click to expand</summary>
@@ -208,7 +209,7 @@ We can generate a signal with arbitrary amplitude modulate, $A(t)$, by generatin
 
 $$\pmb X = A(t)e^{j\phi(t)}.$$
 
-If we want to instead model additive signal (or noise), $\bar{A}(t)$,
+If we want to instead model an additive signal (or additive noise), $\bar{A}(t)$,
 
 $$\pmb X =Ae^{j\phi(t)}+\bar{A}(t) - j\mathcal{H}\{\bar A (t)\}.$$
 
