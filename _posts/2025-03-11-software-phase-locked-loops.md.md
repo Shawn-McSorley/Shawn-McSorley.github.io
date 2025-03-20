@@ -29,7 +29,7 @@ There's two classes of noise that we need to consider. Firstly, there's additive
 
 $$V(t)=A\cos(2\pi f t +\alpha(t))+\bar{A}(t).$$
 
-Additive noise is often associated with electronic noise. I won't limit this generalisation to additive white Gaussian noise, but, more often than not, most additive noise sources I work with are white (i.e. shot noise on a photodetector).
+Additive noise is often associated with electronic noise. I won't limit this generalisation to additive white Gaussian noise, but, more often than not, most additive noise sources I work with are white (e.g. shot noise on a photodetector).
 
 Secondly, there's phase noise. I think of this as random variations in the phase delay of, or arrival time of, our signal. There are a great deal of phase noise sources. I recommend taking a quick read of Enrico's Chart for Phase Noise and Two-Sample Variances [2]. We can accommodate for phase noise fluctuations, $\bar{\epsilon}(t)$, in our voltage model as,
 
