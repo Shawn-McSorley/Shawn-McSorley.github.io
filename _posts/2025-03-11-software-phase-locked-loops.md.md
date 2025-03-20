@@ -181,7 +181,74 @@ In other words, to get IQ data, we actually want the conjugate of the down shift
 
 </details>
 - - -
-#### Property 2: Additive to Phase Noise Conversion
+#### Property 2.1: Arbitrary Phase Modulation
+We can generate a signal with arbitrary phase modulation , $\phi(t)$, by first generating the IQ samples,
+$$ \pmb X = e^{j\phi(t)}=I+jQ.$$
+We then have two equivalent options of converting this to a real signal:
+
+$$x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t)$$
+
+$$x(t)=\mathcal{Re}\{\pmb X^* e^{j2\pi f t}\}$$
+
+<details>
+  <summary>Click to expand</summary>
+We can verify $$x(t)=\mathcal{Re}\{\pmb X^* e^{j2\pi f t}\}$$ by direct evaluation.
+
+$$x(t)=\mathcal{Re}\{\pmb X^* e^{j2\pi f t}\} = \mathcal{Re} \{ (I-jQ)(\cos(2\pi f t) + j\sin(2\pi f t))\}$$
+
+$$=\mathcal{Re}\{I\cos(2\pi f t)-j^2Q\sin(2\pi f t) + j(\dots) \}= I\cos(2\pi f t)+Q\sin(2\pi f t)$$
+
+</details>
+
+
+---
+
+#### Property 2.2: Arbitrary Amplitude Modulation
+We can generate a signal with arbitrary amplitude modulate, $A(t)$, by generating IQ samples,
+
+$$\pmb X = A(t)e^{j\phi(t)}.$$
+
+If we want to instead model and additive signal (or noise), $\bar{A}(t)$,
+
+$$\pmb X =Ae^{j\phi(t)}+\bar{A}(t) - j\mathcal{H}\{\bar A (t)\}.$$
+
+For this equation to make sense, $S_{\bar A}(f)$ should be defined from 0Hz to the sample rate $f_s$. The PSD would then be shifted up to the carrier when transmitting.
+
+<details>
+  <summary>Click to expand</summary>
+
+Consider the signal,
+
+$$ x(t)=A\cos(2\pi f t-\phi)+\bar{A}(t)$$
+
+The analytical signal is, 
+
+$$ \hat{u}(t)=(I_u+jQ_u)e^{j2\pi f t}+\bar{A}(t)+j\mathcal{H}\{\bar{A}\}$$
+
+We can down convert this to figure out I and Q,
+
+$$\hat{u}(t)e^{-j2\pi f t}=I_u+jQ_u+(\bar{A}(t)+j\mathcal{H}\{\bar{A}\})(\cos(2\pi f t)-j\sin(2\pi f t))$$
+
+$$ = [I_u + \bar{A}(t)\cos(2\pi f t)+\mathcal{H}\{\bar{A}\}\sin(2\pi f t)] + j[Q_u+\mathcal{H}\{\bar{A}\}\cos(2\pi f t)-\bar{A}\sin(2\pi f t)]$$
+And from property 1,
+
+$$I=I_u + \bar{A}(t)\cos(2\pi f t)+\mathcal{H}\{\bar{A}\}\sin(2\pi f t)$$
+
+$$Q=-(Q_u+\mathcal{H}\{\bar{A}\}\cos(2\pi f t)-\bar{A}\sin(2\pi f t))$$
+Intuitively, our measurement will see additive noise around the carrier. In the IQ sampling process, the additive noise is frequency shifted down to 0Hz. This is why there are $\cos(2\pi f t)$ and $\sin(2\pi f t)$ terms. However, if we're directly generating noise from 0Hz to $f_s/2$, we can ignore the down-conversion process (it is implicitly assumed). This provides,
+
+$$I=I_u + \bar{A}(t)$$
+
+$$Q=-(Q_u+\mathcal{H}\{\bar{A}\})$$
+
+From which it is clear that,
+
+$$\pmb X =I+jQ=Ae^{j\phi(t)}+\bar{A}(t) - j\mathcal{H}\{\bar A (t)\}.$$
+
+</details>
+
+---
+#### Property 3: Additive to Phase Noise Conversion
 
 For an additive noise source with power spectral density (PSD) $S_\bar A(f)$, it is seen in our measurement as phase noise with a PSD $S_{\phi,\bar A}(f)$, given by,
 
@@ -267,30 +334,8 @@ $$ S_{\phi, A}(f) = \frac{2}{A^2} S_{\bar A}(f)$$
 </details>
 
 - - - 
-#### Property 3: Arbitrary Phase Modulation
-We can generate a signal with arbitrary phase modulation , $\phi(t)$, by first generating the IQ samples,
-$$ \pmb X = e^{j\phi(t)}=I+jQ.$$
-We then have two equivalent options of converting this to a real signal:
 
-$$x(t)=I\cos(2\pi f t)+Q\sin(2\pi f t)$$
-
-$$x(t)=\mathcal{Re}\{\pmb X e^{j2\pi f t}\}$$
-
----
-
-#### Property 4: Arbitrary Amplitude Modulation
-We can generate a signal with arbitrary amplitude modulate, $A(t)$, by generating IQ samples,
-
-$$\pmb X = A(t)e^{j\phi(t)}.$$
-
-If we want to instead model and additive signal (or noise), $\bar{A}(t)$,
-
-$$\pmb X =Ae^{j\phi(t)}+\bar{A}(t) - j\mathcal{H}\{\bar A (t)\}.$$
-
-For this equation to make sense, $S_{\bar A}(f)$ should be defined from 0Hz to the sample rate $f_s$. The PSD would then be shifted up to the carrier when transmitting.
-
----
-
+With this understanding of IQ data, the Analytic signal and the Hilbert transform, we're well equipped to simulate a variety of experimental conditions. Onto software!
 # The rest is in progress!
 # References
 [1] “PySDR: A Guide to SDR and DSP using Python.”  [Online]. Available: [https://pysdr.org/#](https://pysdr.org/#)
