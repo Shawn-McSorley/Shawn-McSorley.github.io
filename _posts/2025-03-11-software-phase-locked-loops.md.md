@@ -208,7 +208,7 @@ We can generate a signal with arbitrary amplitude modulate, $A(t)$, by generatin
 
 $$\pmb X = A(t)e^{j\phi(t)}.$$
 
-If we want to instead model and additive signal (or noise), $\bar{A}(t)$,
+If we want to instead model additive signal (or noise), $\bar{A}(t)$,
 
 $$\pmb X =Ae^{j\phi(t)}+\bar{A}(t) - j\mathcal{H}\{\bar A (t)\}.$$
 
@@ -282,21 +282,21 @@ There are a few ways to figure out how $\bar A$ will couple into the phase measu
 
 While crude, this derivation will use:
 
-$$S(f)=\frac{1}{\text{RBW}}|\mathcal{F}(x(t))|^2$$
+$$S(f)=\frac{1}{\text{RBW}}|\mathcal{F}(v(t))|^2$$
 
-where $\mathcal{F}$ is the Fourier transform, $x(t)$ is the signal of interest and $\text{RBW}$ is the resolution bandwidth of our FFT. I'm mixing up continuous and discrete here, but it helps get the end result. A more rigorous approach would be to consider the auto-correlation of our signals.
+where $\mathcal{F}$ is the Fourier transform, $v(t)$ is the signal of interest and $\text{RBW}$ is the resolution bandwidth of our FFT. I'm mixing up continuous and discrete here, but it helps get the end result. A more rigorous approach would be to consider the auto-correlation of our signals.
 
 Considering our noise model,
-$$v(t) = A cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)$$
+$$v(t) = A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)$$
 Take the Hilbert transform,
-$$\mathscr{H}\{v(t)\}=Asin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}$$
+$$\mathscr{H}\{v(t)\}=A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}$$
 Form the analytic signal,
-$$u(t) = A cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t) + j[Asin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}]$$
+$$u(t) = A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t) + j[A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}]$$
 The instantaneous phase $\bar{\phi}(t)$ is given by the argument of this analytic signal (which is the phase of the phasor drawn in Figure 2),
-$$\bar{\phi}(t) = \tan^{-1} [\frac{Asin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}}{A cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)}]$$
+$$\bar{\phi}(t) = \tan^{-1} [\frac{A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}}{A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)}]$$
 For small $x,y$ it can be shown using a taylor expansion of $x$ and $y$
 that,
-$$tan^{-1}[\frac{sin(\alpha)+x}{cos(\alpha)+y}]\approx \alpha + x cos(\alpha) - y sin(\alpha)$$
+$$\tan^{-1}[\frac{\sin(\alpha)+x}{\cos(\alpha)+y}]\approx \alpha + x \cos(\alpha) - y \sin(\alpha)$$
 from which it follows for small noise fluctuations $\bar{A}(t)$ that,
 $$\bar{\phi}(t) = \omega_i t + \theta_i + \bar{\epsilon}(t) + \frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + \theta_i + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))$$
 We can ignore the contribution from the frequency and static offset,
@@ -325,11 +325,13 @@ $$ \mathcal{F}(\bar{\phi}(t)) = \frac{1}{2A}[-j\pmb{A}(f-f_i)-j\pmb{A}(f+f_i)-j\
 
 Recalling that we can crudely relate the power spectral density to the magnitude of the Fourier transform, we can write the power spectral density of the phase noise as,
 
+$$|\mathcal{F}(\bar \phi(t))|=\frac{1}{A^2} |\pmb A(f-f_i)| $$
+
 $$ S_{\phi, A}(f) = \frac{1}{A^2} S_{\bar A}(f-f_i)$$
 
-For our case, we only want to consider the single sided PSD, so we can write,
+For our case, we only want to consider the single sided PSD, and we make the frequency shift by $f_i$ implicit. So we can write,
 
-$$ S_{\phi, A}(f) = \frac{2}{A^2} S_{\bar A}(f)$$
+$$ S_{\phi, A}(f) = \frac{2}{A^2} S_{\bar A}(f).$$
 
 </details>
 
