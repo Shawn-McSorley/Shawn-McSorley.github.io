@@ -4,7 +4,7 @@ title: "Software Phase Locked Loops"
 categories: phase
 tags: SDR
 ---
-# Motivation
+ # Motivation
 Often in my research I need to measure the phase of a signal. This signal will commonly be a radio-frequency (RF) tone, described as a time varying voltage $V(t)$,
 
 $$V(t)=A\cos(2\pi f t +\alpha(t)).$$
@@ -258,22 +258,22 @@ $$ S_{\phi, \bar A}(f)=\frac{2}{A^2}S_\bar A(f),$$
 for signal amplitude $A$. This essentially tells us how our signal-to-noise ratio limits our measurement. As our signal decreases, we see more additive noise in our phase measurement. This is a very important result!
 
 <details>
-  <summary>Click to expand</summary>
+<summary>Click to expand</summary>
 A simplified model of the noise sources is given by:
 
-$$v(t)=A\cos(\omega t + \theta(t) + \bar{\epsilon}(t)) + \bar{A}(t)$$
+$$v(t)=A\cos(\omega t + \alpha(t) + \bar{\epsilon}(t)) + \bar{A}(t)$$
 
-where $v(t)$ is the voltage of the signal input to our phase measurement device, $A$ is the amplitude of the signal, $\omega$ is the frequency of the signal, $\theta$ is the deterministic phase of the signal we want to measure, $\bar{\epsilon}(t)$ is the phase noise, and $\bar{A}(t)$ is the amplitude noise. We can usually lump the phase we're interested in measuring, and its noise together.
+where $v(t)$ is the voltage of the signal input to our phase measurement device, $A$ is the amplitude of the signal, $\omega$ is the frequency of the signal, $\alpha$ is the deterministic phase of the signal we want to measure, $\bar{\epsilon}(t)$ is the phase noise, and $\bar{A}(t)$ is the amplitude noise. We can usually lump the phase we're interested in measuring, and its noise together.
 
-A phase-locked loop (PLL) can be used to measure the phase of the signal. For the following, it is useful to think of the PLL as a device that outputs the phase $\phi(t)$, where,
+A PLL will be used to measure the phase of the signal. For the following, it is useful to think of the PLL as a device that outputs the phase $\phi(t)$, where,
 
-$$ \phi(t) = \theta(t) + \bar{\epsilon}(t) + k \bar{A}(t). $$
+$$ \phi(t) = \alpha(t) + \bar{\epsilon}(t) + k \bar{A}(t). $$
 
-Here, $\phi(t)$ is the total phase of the signal, $\theta(t)$ is the signal we want to measure, $\bar\epsilon$ is the phase noise, and $k\bar{A}(t)$ is the amplitude noise. Here, $k$, is just to show that the amplitude noise couples into our measurement. We will work out very shortly how it does so.
+Here, $\phi(t)$ is the total phase of the signal, $\alpha(t)$ is the signal we want to measure, $\bar\epsilon$ is the phase noise, and $k\bar{A}(t)$ is the amplitude noise. Here, $k$, is just to show that the amplitude noise couples into our measurement. We will work out very shortly how it does so.
 
 To avoid confusion, the phasor model can be separated into its time varying component and its phase component (ignoring additive noise):
 
-$$ v(t) = \Re(Ae^{j\omega t}e^{j\phi})$$
+$$ v(t) = \mathcal{Re}\{Ae^{j\omega t}e^{j\phi}\}$$
 
 and the ideal PLL measurement will be given by:
 
@@ -287,50 +287,52 @@ $$S(f)=\frac{1}{\text{RBW}}|\mathcal{F}(v(t))|^2$$
 
 where $\mathcal{F}$ is the Fourier transform, $v(t)$ is the signal of interest and $\text{RBW}$ is the resolution bandwidth of our FFT. I'm mixing up continuous and discrete here, but it helps get the end result. A more rigorous approach would be to consider the auto-correlation of our signals.
 
-Considering our noise model,
-$$v(t) = A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)$$
+As we're looking at how noise couples in to phase, we will ignore $\alpha(t)$. Starting with,
+$$v(t) = A \cos(\omega t + \bar{\epsilon}(t))+\bar{A}(t)$$
 Take the Hilbert transform,
-$$\mathscr{H}\{v(t)\}=A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}$$
+$$\mathscr{H}\{v(t)\}=A\sin(\omega t + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}$$
 Form the analytic signal,
-$$u(t) = A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t) + j[A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}]$$
-The instantaneous phase $\bar{\phi}(t)$ is given by the argument of this analytic signal (which is the phase of the phasor drawn in Figure 2),
-$$\bar{\phi}(t) = \tan^{-1} [\frac{A\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}}{A \cos(\omega_i t + \theta_i + \bar{\epsilon}(t))+\bar{A}(t)}]$$
+$$u(t) = A \cos(\omega t + \bar{\epsilon}(t))+\bar{A}(t) + j[A\sin(\omega t + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}]$$
+The instantaneous phase $\bar{\phi}(t)$ is given by the argument of this analytic signal (which is the phase of the phasor drawn in Figure 1),
+$$\bar{\phi}(t) = \tan^{-1} [\frac{A\sin(\omega t + \bar{\epsilon}(t))+\mathscr{H}\{\bar{A}(t)\}}{A \cos(\omega t + \bar{\epsilon}(t))+\bar{A}(t)}]$$
 For small $x,y$ it can be shown using a taylor expansion of $x$ and $y$
 that,
 $$\tan^{-1}[\frac{\sin(\alpha)+x}{\cos(\alpha)+y}]\approx \alpha + x \cos(\alpha) - y \sin(\alpha)$$
 from which it follows for small noise fluctuations $\bar{A}(t)$ that,
-$$\bar{\phi}(t) = \omega_i t + \theta_i + \bar{\epsilon}(t) + \frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + \theta_i + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))$$
-We can ignore the contribution from the frequency and static offset,
-providing $$\begin{aligned}
-    \bar{\phi(t)}=\bar{\epsilon}(t)+\frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + &\theta_i + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))\\
+$$\bar{\phi}(t) = \omega t + \bar{\epsilon}(t) + \frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega_i t + \bar{\epsilon}(t))$$
+We can remove the  $\omega t$ component, leaving,
+
+$$\begin{aligned}
+    \bar{\phi(t)}=\bar{\epsilon}(t)+\frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega t + &\bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega t + \bar{\epsilon}(t))\\
     \bar{\phi(t)} &= \bar{\epsilon}(t)+ A'(t)
 \end{aligned}$$ From this it is clear that, $$\begin{aligned}
-    S_{\phi,\epsilon}(f)=S_{\epsilon}(f)
+    S_{\phi,\bar\epsilon}(f)=S_{\bar\epsilon}(f)
 \end{aligned}$$ which is expected. 
 
 It is a bit more involved to work out the contribution from the additive noise. Let's just consider the additive noise now,
 
-$$ \bar{\phi(t)}=\frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + \theta_i + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega_i t + \theta_i + \bar{\epsilon}(t)) $$
+$$ \bar{\phi(t)}=\frac{\mathscr{H}\{\bar{A}(t)\}}{A}\cos(\omega t + \bar{\epsilon}(t)) - \frac{\bar{A}(t)}{A}\sin(\omega t + \bar{\epsilon}(t)) $$
 
-Using the property of the Hilbert transform $\mathcal{F}(\mathcal{H}(x(t)))=-j \mathcal{F}(x(t))$,
+Using the property of the Hilbert transform $\mathcal{F}(\mathcal{H}(x(t)))=-j \mathcal{F}(x(t))$, we can obtain,
 
-$$ \mathcal{F}(\bar{\phi}(t)) = \mathcal{F}\{\frac{\mathcal{H}\{\bar{A}(t)\}}{A}\cos(\omega_i t + \theta_i + \bar{\epsilon}(t))\} + \mathcal{F}\{-\frac{\bar{A}(t)}{A}\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))\} $$
+$$ \mathcal{F}(\bar{\phi}(t)) = \mathcal{F}\{\frac{\mathcal{H}\{\bar{A}(t)\}}{A}\cos(\omega t + \bar{\epsilon}(t))\} + \mathcal{F}\{-\frac{\bar{A}(t)}{A}\sin(\omega t + \bar{\epsilon}(t))\} $$
 
-Which when using the convolution property,
+To avoid confusion with the Fourier transform, I will take $\omega=2\pi f_c$, where $f_c$ is the carrier. I will also ignore $\bar\epsilon(t)$ inside the $\sin$ and $\cos$ terms. Using the convolution property of the Fourier transform,
 
-$$ \mathcal{F}(\bar{\phi}(t)) = \mathcal{F}\{\frac{\mathcal{H}\{\bar{A}(t)\}}{A}\} \ast \mathcal{F}\{\cos(\omega_i t + \theta_i + \bar{\epsilon}(t))\} + \mathcal{F}\{-\frac{\bar{A}(t)}{A}\} \ast \mathcal{F}\{\sin(\omega_i t + \theta_i + \bar{\epsilon}(t))\} $$
-$$ \mathcal{F}(\bar{\phi}(t)) = -j\frac{\mathcal{F}\{\bar{A}(t)\}}{A} \ast \frac{1}{2}[\delta(f-f_i)+\delta(f+f_i)] + \mathcal{F}\{\frac{\bar{A}(t)}{A}\} \ast \frac{1j}{2}[-\delta(f-f_i)+\delta(f+f_i)] $$
+$$ \mathcal{F}(\bar{\phi}(t)) = \mathcal{F}\{\frac{\mathcal{H}\{\bar{A}(t)\}}{A}\} \ast \mathcal{F}\{\cos(2\pi f_c t + \bar{\epsilon}(t))\} + \mathcal{F}\{-\frac{\bar{A}(t)}{A}\} \ast \mathcal{F}\{\sin(2\pi f_c t + \bar{\epsilon}(t))\} $$
+$$ \mathcal{F}(\bar{\phi}(t)) = -j\frac{\mathcal{F}\{\bar{A}(t)\}}{A} \ast \frac{1}{2}[\delta(f-f_c)+\delta(f+f_c)] + \mathcal{F}\{\frac{\bar{A}(t)}{A}\} \ast \frac{1j}{2}[-\delta(f-f_c)+\delta(f+f_c)] $$
+
 Define $\pmb{A}(f)=\mathcal{F}\{\bar A(t)\}$,
 
-$$ \mathcal{F}(\bar{\phi}(t)) = \frac{1}{2A}[-j\pmb{A}(f-f_i)-j\pmb{A}(f+f_i)-j\pmb{A}(f-f_i)+j\pmb{A}(f+f_i)]=\frac{-1j}{A}\pmb{A}(f-f_i) $$
+$$ \mathcal{F}(\bar{\phi}(t)) = \frac{1}{2A}[-j\pmb{A}(f-f_c)-j\pmb{A}(f+f_c)-j\pmb{A}(f-f_c)+j\pmb{A}(f+f_c)]=\frac{-1j}{A}\pmb{A}(f-f_c) $$
 
 Recalling that we can crudely relate the power spectral density to the magnitude of the Fourier transform, we can write the power spectral density of the phase noise as,
 
-$$|\mathcal{F}(\bar \phi(t))|=\frac{1}{A^2} |\pmb A(f-f_i)| $$
+$$|\mathcal{F}(\bar \phi(t))|=\frac{1}{A^2} |\pmb A(f-f_c)| $$
 
-$$ S_{\phi, A}(f) = \frac{1}{A^2} S_{\bar A}(f-f_i)$$
+$$ S_{\phi, A}(f) = \frac{1}{A^2} S_{\bar A}(f-f_c)$$
 
-For our case, we only want to consider the single sided PSD, and we make the frequency shift by $f_i$ implicit. So we can write,
+For our case, we only want to consider the single sided PSD, and we make the frequency shift by $f_c$ implicit. So we can write,
 
 $$ S_{\phi, A}(f) = \frac{2}{A^2} S_{\bar A}(f).$$
 
