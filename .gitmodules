@@ -1,0 +1,3 @@
+[submodule "SDR-notes"]
+	path = SDR-notes
+	url = git@github.com:Shawn-McSorley/SDR-notes.git
