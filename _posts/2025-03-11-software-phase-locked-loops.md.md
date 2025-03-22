@@ -37,10 +37,10 @@ $$V(t)=A\cos(2\pi f t +\alpha(t)+\bar{\epsilon}(t))+\bar{A}(t).$$
 
 It can be helpful to instead consider a phasor model of $V(t)$. I've drawn such a model in Figure. 1. 
 
-![Alt text](/assets/phasor.png){: .fig }
-<div style="text-align: center;">
-Figure 1: Phasor diagram of the voltage model. $f$, the rate at which our phasor spins; $\bar{\phi}$ the phase that our PLL will measure; $A$, the amplitude (magnitude) of the measurement signal; $\bar{A}$, the additive amplitude noise in the measurement signal; $\bar{\epsilon}$, the phase noise of the signal.
-</div>
+![phasor](/assets/phasor.png)  
+**Figure 1:** Phasor diagram of the voltage model. $f$, the rate at which our phasor spins; $\bar{\phi}$ the phase that our PLL will measure; $A$, the amplitude (magnitude) of the measurement signal; $\bar{A}$, the additive amplitude noise in the measurement signal; $\bar{\epsilon}$, the phase noise of the signal.
+
+
 
 Our phasor model is a complex exponential, 
 
@@ -341,6 +341,68 @@ $$ S_{\phi, A}(f) = \frac{2}{A^2} S_{\bar A}(f).$$
 - - - 
 
 With this understanding of IQ data, the Analytic signal and the Hilbert transform, we're well equipped to simulate a variety of experimental conditions. Onto software!
+
+## Python Simulations
+# Additive to Phase Noise Conversion
+
+I'll be using Python to run these simulations. The code can be found in [![GitHub](https://img.shields.io/badge/Repo-Link-blue?logo=github)](https://github.com/Shawn-McSorley/SDR-notes). The three packages I'll make extensive use of are NumPy, Matplotlib and SciPy. Let's start by generating some additive noise, added onto a carrier with frequency $f_c$.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal as signal
+
+fs = 100e3 # sample rate
+fc = 25e3 # carrier frequency
+A = 10 # amplitude of carrier
+t_sim = 10 # total simulation time
+N = int(fs*t_sim) # number of samples
+t = np.arange(0, N)/fs # time vector
+
+# generate white noise
+standard_deviation = 0.01
+mean = 0
+random_noise = np.random.normal(mean, standard_deviation, N) # this is the additive noise we will add to the signal
+# generate carrier
+carrier = A*np.cos(2*np.pi*fc*t) + random_noise
+```
+
+For now, I will generate noise by drawing random samples from a normal distribution. Here I've set the mean of the distribution to zero. The standard deviation sets the total power of white noise seen in the frequency range $[0, f_s/2]$. From Parseval's theorem, the total variance satisfies $\sigma^2=2\int^{f_s/2}_0 S(f)df$. I've also generate a pure carrier, without any phase noise or modulation. Let's visualise the power spectrum of the carrier, with additive noise.
+
+```python
+# calculate and plot power spectrum
+nperseg1 = 2**10
+nperseg2 = 2**12
+nperseg3 = 2**14
+f1, Pxx1 = signal.welch(carrier, fs, nperseg=nperseg1, scaling='spectrum')
+f2, Pxx2 = signal.welch(carrier, fs, nperseg=nperseg2, scaling='spectrum')
+f3, Pxx3 = signal.welch(carrier, fs, nperseg=nperseg3, scaling='spectrum')
+
+plt.figure()
+plt.plot(f1, Pxx1, label='nperseg = 2**10')
+plt.plot(f2, Pxx2, label='nperseg = 2**12')
+plt.plot(f3, Pxx3, label='nperseg = 2**14')
+plt.legend()
+plt.yscale('log')
+plt.xlabel('Frequency [Hz]')
+plt.ylabel('Power Spectrum [V**2/Hz]')
+plt.xlim([fc-5e3, fc+5e3])
+```
+
+To generate the power spectrum, I'm using an implementation of the Welch method in the SciPy library. For consistency, we should be careful about the `scaling` parameter passed into the Welch method, which defaults to density. If we're interested in looking at the total power occupying a frequency bin, we should set scaling to be `spectrum`. However, if we're interested at looking at how power is spread out across multiple frequency bins, we should set scaling to be `density`. 
+
+![Power Spectrum](/assets/carrier_power_spectrum.png)  
+**Figure 2:** Power spectrum of a carrier with additive noise. Power spectrum is calculated with Welch method. The *nperseg* is changed between each plot.
+
+
+To better illustrate the difference between `spectrum` and `density`, I've plotted three Welch spectrums, with different `nperseg` values. The `nperseg` value will control the frequency bandwidth of each frequency bin. Notice that the power of the carrier stays the same each time, but the total power of the noise changes. The total power of the noise across  $[0, f_s/2]$ must stay the same. As `nperseg` is increased, the bandwidth of a frequency bin decreases, which means that there are more frequency bins across $[0, f_s/2]$. The total power, integrated across all frequency bins, is constant. So as the number of bins increases, the total noise power in each bin decreases. 
+ 
+
+![Power Spectral Density](/assets/carrier_power_density.png)  
+**Figure 3:** Power spectral density of a carrier with additive noise. Power spectral density is calculated with Welch method. The *nperseg* is changed between each plot.
+
+
+Rather, if we were instead interested at looking at the additive noise, we should normalise the power spectrum to the resolution bandwidth of the bin. This is the power spectral density, which is obtained when passing `density` to the Welch method.
 # The rest is in progress!
 # References
 [1] “PySDR: A Guide to SDR and DSP using Python.”  [Online]. Available: [https://pysdr.org/#](https://pysdr.org/#)
