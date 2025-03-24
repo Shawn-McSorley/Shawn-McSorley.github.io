@@ -285,7 +285,7 @@ While crude, this derivation will use:
 
 $$S(f)=\frac{1}{\text{RBW}}|\mathcal{F}(v(t))|^2$$
 
-where $\mathcal{F}$ is the Fourier transform, $v(t)$ is the signal of interest and $\text{RBW}$ is the resolution bandwidth of our FFT. I'm mixing up continuous and discrete here, but it helps get the end result. A more rigorous approach would be to consider the auto-correlation of our signals.
+where $\mathcal{F}$ is the Fourier transform, $v(t)$ is the signal of interest and $\text{RBW}$ is the resolution bandwidth of our FFT. I'm mixing up continuous and discrete here, but it helps get the end result. Another approach can be found in [5].
 
 As we're looking at how noise couples in to phase, we will ignore $\alpha(t)$. Starting with,
 $$v(t) = A \cos(\omega t + \bar{\epsilon}(t))+\bar{A}(t)$$
@@ -412,3 +412,5 @@ Rather, if we were instead interested at looking at the additive noise, we shoul
 [3] “hilbert — SciPy v1.15.2 Manual.”  [Online]. Available: [https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.hilbert.html)
 
 [4] Mathuranathan, “Understanding Analytic Signal and Hilbert Transform,” GaussianWaves. [Online]. Available: [https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/](https://www.gaussianwaves.com/2017/04/analytic-signal-hilbert-transform-and-fft/)
+
+[5] “Effects of Additive Noise,” in _Phaselock Techniques_, John Wiley & Sons, Ltd, 2005, pp. 123–142. doi: [10.1002/0471732699.ch6](https://doi.org/10.1002/0471732699.ch6).
