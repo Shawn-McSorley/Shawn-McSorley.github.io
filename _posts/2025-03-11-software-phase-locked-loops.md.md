@@ -4,7 +4,8 @@ title: "Software Phase Locked Loops"
 categories: phase
 tags: SDR
 ---
- # Motivation
+# Motivation
+
 Often in my research I need to measure the phase of a signal. This signal will commonly be a radio-frequency (RF) tone, described as a time varying voltage $V(t)$,
 
 $$V(t)=A\cos(2\pi f t +\alpha(t)).$$
@@ -255,7 +256,7 @@ For an additive noise source with power spectral density (PSD) $S_\bar A(f)$, it
 
 $$ S_{\phi, \bar A}(f)=\frac{2}{A^2}S_\bar A(f),$$
 
-for signal amplitude $A$. This essentially tells us how our signal-to-noise ratio limits our measurement. As our signal decreases, we see more additive noise in our phase measurement. This is a very important result!
+for signal amplitude $A$. This essentially tells us how our signal-to-noise (SNR) ratio limits our measurement. As our signal decreases, we see more additive noise in our phase measurement. This is a very important result!
 
 <details>
 <summary>Click to expand</summary>
@@ -398,11 +399,75 @@ To generate the power spectrum, I'm using an implementation of the Welch method 
 To better illustrate the difference between `spectrum` and `density`, I've plotted three Welch spectrums, with different `nperseg` values. The `nperseg` value will control the frequency bandwidth of each frequency bin. Notice that the power of the carrier stays the same each time, but the total power of the noise changes. The total power of the noise across  $[0, f_s/2]$ must stay the same. As `nperseg` is increased, the bandwidth of a frequency bin decreases, which means that there are more frequency bins across $[0, f_s/2]$. The total power, integrated across all frequency bins, is constant. So as the number of bins increases, the total noise power in each bin decreases. 
  
 
-![Power Spectral Density](/assets/carrier_power_density.png)  
+![hm](/assets/carrier_power_density.png)  
+
 **Figure 3:** Power spectral density of a carrier with additive noise. Power spectral density is calculated with Welch method. The *nperseg* is changed between each plot.
 
 
 Rather, if we were instead interested at looking at the additive noise, we should normalise the power spectrum to the resolution bandwidth of the bin. This is the power spectral density, which is obtained when passing `density` to the Welch method.
+
+To extract the phase from this simulated signal, we can use SciPy's `signal.hilbert` function, which provides the analytic signal.
+
+``` Python
+analytic_signal = signal.hilbert(carrier)
+instantaneous_phase = np.unwrap(np.angle(analytic_signal)) - 2*np.pi*fc*t
+
+down_shifted = analytic_signal * np.exp(-1j*2*np.pi*fc*t) # down shift the analytic signal by fc
+phase_down_shifted = np.angle(down_shifted)
+```
+
+We can choose to calculate the instantaneous phase of the signal, which is calculated with `np.angle(analytic_signal)`, or we can first down shift the analytic signal and then calculate the phase. The instantaneous phase includes the frequency of the carrier, which should be removed. We can then calculate the phase PSD.
+
+``` python
+f1, Pxx1 = signal.welch(random_noise, fs, nperseg=nperseg)
+f3, Pxx3 = signal.welch(phase_down_shifted, fs, nperseg=nperseg)
+scaled_additive_noise_PSD = 2 * Pxx1 / A**2
+
+plt.figure()
+plt.plot(f1, Pxx1, label='Generated additive noise')
+plt.plot(f1, scaled_additive_noise_PSD, label='Scaled additive noise')
+plt.plot(f3, Pxx3, label='Phase from down shifted')
+plt.axvline(x=fc, color='k', linestyle='--', label='Carrier frequency')
+plt.legend()
+plt.yscale('log')
+plt.xscale('log')
+plt.xlabel('Frequency [Hz]')
+plt.ylabel('Power Spectrum [rad**2/Hz]')
+```
+
+![Phase Spectral Density](/assets/phase_noise_PSD.png)  
+**Figure 4:** Phase power spectral density of generated additive noise, scaled additive noise and the calculated phase of the signal. Here, the PSD of the additive noise is an amplitude PSD, while the units of the scaled additive noise and the phase PSD are in radians.
+
+Figure 4 shows the PSD of the generated additive noise, which would be in units of $V^2/\text{Hz}$, the scaled additive noise, obtained from $S_\phi(f)=S_{\bar A}(f)/A^2$ in units of $\text{rad}^2/\text{Hz}$, and the calculated phase also in units of  $\text{rad}^2/\text{Hz}$. We can see that the additive to phase noise conversion holds for this choice of carrier frequency, amplitude and noise level. If we decrease the amplitude of the signal, we would expect the measured phase noise to increase. We can also see a cut-off at the carrier frequency, this won't be a concern when we get to generating IQ samples. I've hidden the explanation for it, but it's to do with the Fourier transform of the analytic signal. 
+
+Run this simulation locally, and play around with different parameters. Essentially, we're simulating an arbitrary SNR, and investigating how it will limit our measurement of phase. A brief example is plotted in Figure 5. 
+
+```Python
+test_modulation = 0.1 * np.sin(2*np.pi*100*t) # Simulate a phase modulation
+A1 = 1 # strong SNR
+A2 = 0.01 # weak SNR
+carrier1 = A1*np.cos(2*np.pi*fc*t + test_modulation) + random_noise # same additive noise
+carrier2 = A2*np.cos(2*np.pi*fc*t + test_modulation) + random_noise # same additive noise
+
+analytic_signal1 = signal.hilbert(carrier1)
+analytic_signal2 = signal.hilbert(carrier2)
+
+down_shifted1 = np.angle(analytic_signal1 * np.exp(-1j*2*np.pi*fc*t))
+down_shifted2 = np.angle(analytic_signal2 * np.exp(-1j*2*np.pi*fc*t))
+```
+
+
+![modulation](/assets/phase_noise_PSD_modulation.png)  
+**Figure 5:** Phase power spectral density of a signal with a phase modulation. Here, the signal-to-noise (SNR) is adjusted by decreasing the simulated amplitude $A$.
+
+Between each phase calculation, the additive noise is not changed. However, as the amplitude is decreased, the SNR between each phase calculation is much worse. We can start to see how additive noise can become an issue when tracking the phase of weak carriers. It's also a good idea to take a look at the time-series, so we don't get too lost in the PSD. The PSD is a tool to help us understand what's happening in our time-series. Note that I've used different amplitude values, and a stronger phase modulation, as the NumPy `np.unwrap()` routine struggles to unwrap phase data with a lot of noise (a problem which will be addressed with the software PLL), and the stronger phase modulation is easier to visualise. 
+
+
+![modulation](/assets/carrier_modulation.png)  
+**Figure 6:** Phase time-series of a signal with a phase modulation. Here, the signal-to-noise (SNR) is adjusted by decreasing the simulated amplitude $A$.
+
+
+
 # The rest is in progress!
 # References
 [1] “PySDR: A Guide to SDR and DSP using Python.”  [Online]. Available: [https://pysdr.org/#](https://pysdr.org/#)
