@@ -5,3 +5,7 @@ _site
 vendor
 Gemfile.lock
 SDR-notes/
+bundle
+commonmarker-0.23.11.gem
+install.log
+.bundle/config
