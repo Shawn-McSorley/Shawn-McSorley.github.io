@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Phase, IQ Data and the Analytic Signal
+title: Phase Noise, IQ Data and the Analytic Signal
 categories: phase
 tags:
   - SDR
