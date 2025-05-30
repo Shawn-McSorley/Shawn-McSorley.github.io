@@ -1,8 +1,9 @@
 ---
 layout: post
-title: "Software Phase Locked Loops"
+title: Phase, IQ Data and the Analytic Signal
 categories: phase
-tags: SDR
+tags:
+  - SDR
 ---
 # Motivation
 
@@ -466,9 +467,6 @@ Between each phase calculation, the additive noise is not changed. However, as t
 ![modulation](/assets/carrier_modulation.png)  
 **Figure 6:** Phase time-series of a signal with a phase modulation. Here, the signal-to-noise (SNR) is adjusted by decreasing the simulated amplitude $A$.
 
-
-
-# The rest is in progress!
 # References
 [1] “PySDR: A Guide to SDR and DSP using Python.”  [Online]. Available: [https://pysdr.org/#](https://pysdr.org/#)
 
