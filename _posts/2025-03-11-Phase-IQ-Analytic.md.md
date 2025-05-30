@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Phase Noise, IQ Data and the Analytic Signal
+title: Measuring Phase in Software - Phase Noise, IQ Data and the Analytic Signal
 categories: phase
 tags:
   - SDR
@@ -11,7 +11,7 @@ Often in my research I need to measure the phase of a signal. This signal will c
 
 $$V(t)=A\cos(2\pi f t +\alpha(t)).$$
 
-Here, $A$ is the amplitude of the tone, $f$ is the frequency of the tone, $t$ is the measurement time, and $\alpha(t)$ is some arbitrary phase (which may depend on time). In this post, I want to run through some tools I've found useful for measuring $\alpha(t)$. The end-goal for this post will be a software phase-locked loop (PLL). In short, this is a control system that actively tracks the phase of a tone. The end-goal for this series will be implementing an all-digital PLL inside the field-programmable gate array (FPGA) of a Pluto software-defined radio (SDR). Rather than jumping straight to the FPGA, I want to take the time to describe some important signal processing theory. This can all be done in software, which is a bit easier to work with.
+Here, $A$ is the amplitude of the tone, $f$ is the frequency of the tone, $t$ is the measurement time, and $\alpha(t)$ is some arbitrary phase (which may depend on time). In this post, I want to run through some tools I've found useful for measuring $\alpha(t)$. The end-goal for this series of blog posts will be a software phase-locked loop (PLL). In short, this is a control system that actively tracks the phase of a tone. The end-goal for this series will be implementing an all-digital PLL inside the field-programmable gate array (FPGA) of a Pluto software-defined radio (SDR). Rather than jumping straight to the FPGA, I want to take the time to describe some important signal processing theory. This can all be done in software, which is a bit easier to work with.
 # Overview
 Prior to reading this post, I highly recommend going through *PySDR: A Guide to SDR and DSP using Python* [1]. It goes into great detail on in-phase and quadrature (IQ) sampling, and signal processing on IQ samples. I'm also going to assume familiarity with Python, Fourier transforms, Z-transforms, power spectrums and power spectral densities. 
 
@@ -19,10 +19,8 @@ In this post, I want to cover the following theory:
 1. How we can model noise in $V(t)$
 2. Phasors, and what measuring phase actually mean
 3. The Hilbert transform and its relationship to IQ data
-4. Generating arbitrary noise from a power spectral density
-5. How a phase-locked loop works (with IQ data)
 
-After getting the theory out of the way, I'll start using Python to generate simulated data.
+I also want to show how additive noise can contribute to phase measurements. After getting the theory out of the way, I'll start using Python to generate data.
 
 There's a bit to cover. We could just jump straight to code for a PLL, and of course you're welcome to do so (skip to the end). However, if you take the time to understand the tools I present here, you will be able to simulate and understand a multitude of experimental conditions.   
 
